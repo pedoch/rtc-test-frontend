@@ -181,6 +181,16 @@ function App() {
   const startConversation = () => {
     console.log("Starting conversation with session ID:", sessionIdRef.current);
     setCallStatus("connected");
+
+    // Start audio recording
+    if (
+      audioRecorderRef.current &&
+      audioRecorderRef.current.state === "inactive"
+    ) {
+      audioRecorderRef.current.start(1000); // Send chunks every 1 second
+      console.log("Audio recording started");
+    }
+
     const data = {
       type: "start_conversation",
       session_id: sessionIdRef.current,
@@ -201,7 +211,13 @@ function App() {
 
   const cleanup = () => {
     console.log("Cleaning up resources...");
-    audioRecorderRef.current?.stop();
+    if (
+      audioRecorderRef.current &&
+      audioRecorderRef.current.state === "recording"
+    ) {
+      audioRecorderRef.current.stop();
+      console.log("Audio recording stopped");
+    }
     setCallStatus("idle");
   };
 
