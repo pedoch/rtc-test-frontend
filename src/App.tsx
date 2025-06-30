@@ -7,6 +7,8 @@ const websocket = new WebSocket(
   "ws://telephone-app-414305781523.us-east1.run.app/"
 );
 
+// const websocket = new WebSocket("ws://dc67-41-217-45-97.ngrok-free.app/");
+
 const generateRandomId = () => {
   return Math.random().toString(36).substring(2, 15);
 };
@@ -56,10 +58,12 @@ function App() {
 
       case "ai_audio":
         console.log("AI response received");
+        stopGettingAudio(); // Start getting audio after response
         playAudioResponse(data.audio);
         if (data.is_greeting) {
           console.log("This is the initial greeting");
         }
+        startGettingAudio(); // Restart audio capture after response
         break;
 
       case "session_ended":
@@ -142,6 +146,8 @@ function App() {
       String.fromCharCode(...Array.from(new Uint8Array(arrayBuffer)))
     );
 
+    console.log(base64Audio);
+
     const data = {
       type: "audio_data",
       session_id: sessionIdRef.current,
@@ -178,18 +184,35 @@ function App() {
     }
   }
 
-  const startConversation = () => {
-    console.log("Starting conversation with session ID:", sessionIdRef.current);
-    setCallStatus("connected");
-
-    // Start audio recording
+  const startGettingAudio = () => {
+    console.log("Starting to get audio from the server...");
     if (
       audioRecorderRef.current &&
       audioRecorderRef.current.state === "inactive"
     ) {
-      audioRecorderRef.current.start(1000); // Send chunks every 1 second
+      audioRecorderRef.current.start(30000); // Start recording and send chunks every 10 seconds
       console.log("Audio recording started");
+    } else {
+      alert("Audio recorder is not initialized");
     }
+  };
+
+  const stopGettingAudio = () => {
+    console.log("Stopping audio capture...");
+    if (
+      audioRecorderRef.current &&
+      audioRecorderRef.current.state === "recording"
+    ) {
+      audioRecorderRef.current.stop();
+      console.log("Audio recording stopped");
+    } else {
+      console.error("Audio recorder is not initialized");
+    }
+  };
+
+  const startConversation = () => {
+    console.log("Starting conversation with session ID:", sessionIdRef.current);
+    setCallStatus("connected");
 
     const data = {
       type: "start_conversation",
@@ -211,13 +234,7 @@ function App() {
 
   const cleanup = () => {
     console.log("Cleaning up resources...");
-    if (
-      audioRecorderRef.current &&
-      audioRecorderRef.current.state === "recording"
-    ) {
-      audioRecorderRef.current.stop();
-      console.log("Audio recording stopped");
-    }
+    stopGettingAudio();
     setCallStatus("idle");
   };
 
