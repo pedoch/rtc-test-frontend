@@ -3,11 +3,11 @@ import "./App.css";
 
 type TCallStatus = "idle" | "calling" | "connected";
 
-const websocket = new WebSocket(
-  "ws://telephone-app-414305781523.us-east1.run.app/"
-);
+// const websocket = new WebSocket(
+//   "ws://telephone-app-414305781523.us-east1.run.app/"
+// );
 
-// const websocket = new WebSocket("ws://dc67-41-217-45-97.ngrok-free.app/");
+const websocket = new WebSocket("ws://7bc9-41-217-45-97.ngrok-free.app/");
 
 const generateRandomId = () => {
   return Math.random().toString(36).substring(2, 15);
@@ -190,7 +190,7 @@ function App() {
       audioRecorderRef.current &&
       audioRecorderRef.current.state === "inactive"
     ) {
-      audioRecorderRef.current.start(30000); // Start recording and send chunks every 10 seconds
+      audioRecorderRef.current.start(15000); // Start recording and send chunks every 10 seconds
       console.log("Audio recording started");
     } else {
       alert("Audio recorder is not initialized");
