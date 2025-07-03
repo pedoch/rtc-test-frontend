@@ -3,11 +3,11 @@ import "./App.css";
 
 type TCallStatus = "idle" | "calling" | "connected";
 
-// const websocket = new WebSocket(
-//   "ws://telephone-app-414305781523.us-east1.run.app/"
-// );
+const websocket = new WebSocket(
+  "ws://telephone-app-414305781523.us-east1.run.app/"
+);
 
-const websocket = new WebSocket("ws://7bc9-41-217-45-97.ngrok-free.app/");
+// const websocket = new WebSocket("ws://7bc9-41-217-45-97.ngrok-free.app/");
 
 const generateRandomId = () => {
   return Math.random().toString(36).substring(2, 15);
@@ -44,7 +44,7 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSocketTypes = (data: any) => {
+  const handleSocketTypes = async (data: any) => {
     switch (data.type) {
       case "session_initialized":
         console.log("Session initialized:", data.session_id);
@@ -59,7 +59,7 @@ function App() {
       case "ai_audio":
         console.log("AI response received");
         stopGettingAudio(); // Start getting audio after response
-        playAudioResponse(data.audio);
+        await playAudioResponse(data.audio);
         if (data.is_greeting) {
           console.log("This is the initial greeting");
         }
@@ -190,7 +190,7 @@ function App() {
       audioRecorderRef.current &&
       audioRecorderRef.current.state === "inactive"
     ) {
-      audioRecorderRef.current.start(15000); // Start recording and send chunks every 10 seconds
+      audioRecorderRef.current.start(5000); // Start recording and send chunks every 10 seconds
       console.log("Audio recording started");
     } else {
       alert("Audio recorder is not initialized");
